@@ -12,8 +12,11 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
 
-    public PaymentService(PaymentRepository paymentRepository) {
+    private final IdempotencyService idempotencyService;
+
+    public PaymentService(PaymentRepository paymentRepository, IdempotencyService idempotencyService) {
         this.paymentRepository = paymentRepository;
+        this.idempotencyService = idempotencyService;
     }
 
     public PaymentTransaction createPayment(String userId, Double amount) {
@@ -27,6 +30,28 @@ public class PaymentService {
         tx.setCreatedAt(LocalDateTime.now());
 
         return paymentRepository.save(tx);
+    }
+
+    public PaymentTransaction processPayment(
+            String transactionId,
+            String userId,
+            Double amount) {
+
+        if (idempotencyService.isDuplicate(transactionId)) {
+            throw new RuntimeException("Duplicate payment request");
+        }
+
+        PaymentTransaction tx = new PaymentTransaction();
+
+        tx.setTransactionId(transactionId);
+        tx.setUserId(userId);
+        tx.setAmount(amount);
+        tx.setStatus("SUCCESS");
+        tx.setCreatedAt(LocalDateTime.now());
+
+        return paymentRepository.save(tx);
+
+        // Payment processing logic
     }
 }
 

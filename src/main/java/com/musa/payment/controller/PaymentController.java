@@ -19,9 +19,10 @@ public class PaymentController {
 
     @PostMapping
     public PaymentTransaction createPayment(
+            @RequestParam String transactionId,
             @RequestParam String userId,
             @RequestParam Double amount) {
 
-        return paymentService.createPayment(userId, amount);
+        return paymentService.processPayment(transactionId, userId, amount);
     }
 }
