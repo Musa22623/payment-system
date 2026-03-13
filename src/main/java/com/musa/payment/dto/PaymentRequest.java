@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class PaymentRequest {
 
+    private String idempotencyKey;
     private String transactionId;
     private Long amount;
 

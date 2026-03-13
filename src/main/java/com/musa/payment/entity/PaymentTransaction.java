@@ -18,6 +18,7 @@ public class PaymentTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String transactionId;
 
     private Long amount;
